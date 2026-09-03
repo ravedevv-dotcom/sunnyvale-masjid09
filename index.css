@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f1115;
+  --color-accent: #e08a6e;
+  --color-peach: #e08a6e;
+  --color-peach-light: #f5a287;
+  --color-peach-dark: #c86d51;
+  --color-peach-glow: #f09d7c;
+  --color-dark-panel: #181b20;
+  --color-dark-surface: #22262e;
+  --color-background: var(--background);
+}
+
+:root {
+  --background: #0d0f12;
+}
+
+.dark {
+  --background: #0d0f12;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0d0f12] text-zinc-100 transition-colors duration-300 antialiased selection:bg-[#e08a6e]/30 selection:text-[#fbdcd3];
+  }
+}
+
+.islamic-pattern {
+  background-image: url("https://www.transparenttextures.com/patterns/arabesque.png");
+}
+
+/* Custom modern dark grey scrollbars with peach hover */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0f12;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272a30;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e08a6e;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+

@@ -1,0 +1,5 @@
+{
+  "name": "Sunnyvale Masjid Portal",
+  "description": "A modern Islamic community and donation portal for Sunnyvale Masjid Abuja, featuring member authentication with email verification, EXCO admin approval, verified bank transfer tracking, Zakat calculator, Qibla compass, and Khutbah schedules.",
+  "requestFramePermissions": []
+}

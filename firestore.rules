@@ -1,0 +1,100 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'sunnyvaleabujamasjid@gmail.com' ||
+        request.auth.token.email == 'rave.devv@gmail.com' ||
+        (request.auth.token.email != null && request.auth.token.email.matches('.*@sunnyvalemasjid\\.org$')) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 1. User Profiles
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'address', 'updatedAt', 'emailVerified'])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 2. Donations
+    match /donations/{donationId} {
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (incoming().userId == request.auth.uid || isAdmin()) && isValidDonation(incoming());
+      allow update, delete: if isAdmin();
+      
+      function isValidDonation(don) {
+        return don.amount is number && don.amount > 0
+          && don.purpose is string && don.purpose.size() > 0
+          && (don.timestamp == null || don.timestamp == request.time || don.timestamp is timestamp)
+          && (don.createdAt == null || don.createdAt == request.time || don.createdAt is timestamp);
+      }
+    }
+
+    // 3. Reminders
+    match /reminders/{reminderId} {
+      allow list: if isAdmin();
+      allow get: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (existing().email == request.auth.token.email || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // 4. Announcements / Khutbahs
+    match /announcements/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 5. Inquiries / Ask the Imam
+    match /inquiries/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 6. Community Feedback & Suggestions
+    match /feedback/{feedbackId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 7. Global Mosque Settings & Prayer Times
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // 8. Events & Programs
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

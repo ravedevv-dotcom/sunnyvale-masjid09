@@ -1,0 +1,159 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores community member profile information and reminder preferences.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the user" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number for contact/reminders" },
+        "address": { "type": "string", "description": "Home address" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email"]
+    },
+    "Reminder": {
+      "title": "Reminder Subscription",
+      "description": "Legacy entity used for phone reminders.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "phone"]
+    },
+    "Donation": {
+      "title": "Donation Record",
+      "description": "Tracking user contributions.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "amount": { "type": "number" },
+        "purpose": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "amount", "purpose"]
+    },
+    "Feedback": {
+      "title": "Community Feedback & Suggestion",
+      "description": "Stores ideas, recommendations, and feedback submitted by community members for Masjid administration review.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "suggestion": { "type": "string" },
+        "isAnonymous": { "type": "boolean" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["category", "title", "suggestion"]
+    },
+    "Announcement": {
+      "title": "Masjid Announcement",
+      "description": "Official community announcements and Friday Khutbah highlights.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "author": { "type": "string" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content"]
+    },
+    "Inquiry": {
+      "title": "Ask the Imam Question / Inquiry",
+      "description": "Direct spiritual or administrative inquiries submitted by community members to the Imam.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["subject", "message"]
+    },
+    "PrayerTimesSetting": {
+      "title": "Prayer Times Setting",
+      "description": "Configurable daily prayer times and Jumu'ah schedule for Sunnyvale Masjid.",
+      "type": "object",
+      "properties": {
+        "fajr": { "type": "string" },
+        "sunrise": { "type": "string" },
+        "dhuhr": { "type": "string" },
+        "asr": { "type": "string" },
+        "maghrib": { "type": "string" },
+        "isha": { "type": "string" },
+        "jumuaKhutbah": { "type": "string" },
+        "jumuaIqamah": { "type": "string" },
+        "specialNote": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["fajr", "dhuhr", "asr", "maghrib", "isha"]
+    },
+    "Event": {
+      "title": "Masjid Event & Program",
+      "description": "Scheduled Islamic events, programs, lectures, and classes.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "time": { "type": "string" },
+        "frequency": { "type": "string" },
+        "speaker": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["title", "category", "time", "description"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles identified by their unique ID or email."
+    },
+    "donations/{donationId}": {
+      "schema": "Donation",
+      "description": "Collection for all donations."
+    },
+    "reminders/{reminderId}": {
+      "schema": "Reminder",
+      "description": "Collection for reminder subscriptions."
+    },
+    "feedback/{feedbackId}": {
+      "schema": "Feedback",
+      "description": "Community feedback and suggestions submitted to Mosque administration."
+    },
+    "announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Community announcements created by EXCO/admins."
+    },
+    "inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Ask the Imam inquiries."
+    },
+    "settings/{settingId}": {
+      "schema": "PrayerTimesSetting",
+      "description": "Global masjid settings including prayer schedules and special announcements."
+    },
+    "events/{eventId}": {
+      "schema": "Event",
+      "description": "Community programs, lectures, and special events."
+    }
+  }
+}
