@@ -4,5 +4,6 @@ dist/
 coverage/
 .DS_Store
 *.log
+push_to_github.sh
 .env*
 !.env.example
