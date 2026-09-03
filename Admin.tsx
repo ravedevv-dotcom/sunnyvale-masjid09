@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { Navigate, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -39,7 +39,9 @@ import {
   Radio,
   BookOpen,
   Layers,
-  Compass
+  Compass,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { db } from './firebase';
 import { 
@@ -122,6 +124,20 @@ const Admin: React.FC = () => {
       setActiveTab(tabParam as any);
     }
   }, [location.search]);
+
+  // Elder-friendly Dropdown Navigation State
+  const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsNavDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Prayer Times State
   const [prayerSchedule, setPrayerSchedule] = useState<PrayerScheduleData>(DEFAULT_PRAYER_TIMES);
@@ -670,95 +686,207 @@ const Admin: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto gap-2 p-1.5 bg-[#181b22] rounded-2xl border border-zinc-800">
-          <button
-            onClick={() => setActiveTab('prayer-times')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'prayer-times'
-                ? 'bg-[#e08a6e] text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <Clock size={16} /> Daily Solat & Iqamah Schedule
-          </button>
+        {/* Navigation Selector: Accessible High-Contrast Dropdown for Elders (No horizontal scrolling) */}
+        {(() => {
+          const tabOptions = [
+            {
+              id: 'prayer-times' as const,
+              label: "Daily Solat & Iqamah Schedule",
+              category: "Prayer & Worship",
+              description: "Configure 5 daily prayers, sunrise, Jumu'ah khutbah & iqamah timings",
+              icon: Clock,
+              badge: null,
+              badgeColor: '',
+            },
+            {
+              id: 'events' as const,
+              label: `Events & Programs (${eventsList.length})`,
+              category: "Community Programs",
+              description: "Publish educational classes, community lectures, youth activities & schedules",
+              icon: Calendar,
+              badge: eventsList.length,
+              badgeColor: 'bg-zinc-800 text-zinc-300',
+            },
+            {
+              id: 'announcements' as const,
+              label: `Mosque Updates & Khutbah Topics (${announcements.length})`,
+              category: "Announcements",
+              description: "Post community news, official notices, and upcoming Friday Khutbah topics",
+              icon: Megaphone,
+              badge: announcements.length,
+              badgeColor: 'bg-zinc-800 text-zinc-300',
+            },
+            {
+              id: 'members' as const,
+              label: "Member Verification & Approval",
+              category: "Administration",
+              description: "Review and approve new resident member registration requests",
+              icon: Users,
+              badge: pendingCount > 0 ? `${pendingCount} pending` : null,
+              badgeColor: 'bg-amber-400 text-zinc-950 font-black',
+            },
+            {
+              id: 'donations' as const,
+              label: `All Donations & Bank Transfer Logs (${donations.length})`,
+              category: "Financials",
+              description: "Verify bank payments, member contributions, and financial records",
+              icon: CreditCard,
+              badge: donations.length,
+              badgeColor: 'bg-zinc-800 text-zinc-300',
+            },
+            {
+              id: 'inquiries' as const,
+              label: `Ask Imam Inquiries (${inquiries.length})`,
+              category: "Religious Guidance",
+              description: "Answer private religious queries and fatwa questions from members",
+              icon: MessageSquare,
+              badge: inquiries.filter(i => i.status === 'pending').length > 0 ? `${inquiries.filter(i => i.status === 'pending').length} unread` : null,
+              badgeColor: 'bg-amber-400 text-zinc-950 font-bold',
+            },
+            {
+              id: 'feedback' as const,
+              label: `Community Feedback & Suggestions (${feedbacks.length})`,
+              category: "Community Input",
+              description: "Read suggestions submitted by residents and attendees",
+              icon: MessageSquarePlus,
+              badge: feedbacks.filter(f => !f.status || f.status === 'pending').length > 0 ? `${feedbacks.filter(f => !f.status || f.status === 'pending').length} new` : null,
+              badgeColor: 'bg-[#e08a6e] text-zinc-950 font-black',
+            },
+          ];
 
-          <button
-            onClick={() => setActiveTab('events')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'events'
-                ? 'bg-[#e08a6e] text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <Calendar size={16} /> Events & Programs ({eventsList.length})
-          </button>
+          const currentTabObj = tabOptions.find(t => t.id === activeTab) || tabOptions[0];
+          const CurrentTabIcon = currentTabObj.icon;
 
-          <button
-            onClick={() => setActiveTab('announcements')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'announcements'
-                ? 'bg-zinc-200 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <Megaphone size={16} /> Mosque Updates & Khutbah Topics ({announcements.length})
-          </button>
+          return (
+            <div ref={dropdownRef} className="relative z-30">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2 px-1">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Layers size={14} className="text-[#e08a6e]" />
+                  Active Admin Section:
+                </label>
+                <span className="text-xs text-zinc-400 font-medium">
+                  Click the box below to switch section (e.g. Events, Members, Donations)
+                </span>
+              </div>
 
-          <button
-            onClick={() => setActiveTab('members')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'members'
-                ? 'bg-zinc-200 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <Users size={16} /> Member Verification & Approval
-            {pendingCount > 0 && (
-              <span className="px-1.5 py-0.2 bg-amber-400 text-zinc-950 text-[10px] font-black rounded-full">
-                {pendingCount}
-              </span>
-            )}
-          </button>
+              {/* Big, High-Contrast Accessible Button for Elders */}
+              <button
+                type="button"
+                onClick={() => setIsNavDropdownOpen(!isNavDropdownOpen)}
+                className="w-full bg-[#181b22] hover:bg-[#1f232c] border-2 border-[#e08a6e]/60 hover:border-[#e08a6e] rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 text-left transition-all shadow-xl cursor-pointer group"
+                aria-expanded={isNavDropdownOpen}
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="w-12 h-12 rounded-xl bg-[#251814] border border-[#e08a6e]/50 flex items-center justify-center text-[#f5a287] shrink-0 group-hover:scale-105 transition-transform shadow-inner">
+                    <CurrentTabIcon size={24} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className="text-base sm:text-xl font-bold text-white tracking-tight">
+                        {currentTabObj.label}
+                      </span>
+                      {currentTabObj.badge && (
+                        <span className={`px-2.5 py-0.5 text-xs font-black rounded-full ${currentTabObj.badgeColor}`}>
+                          {currentTabObj.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal line-clamp-1 sm:line-clamp-none">
+                      {currentTabObj.description}
+                    </p>
+                  </div>
+                </div>
 
-          <button
-            onClick={() => setActiveTab('donations')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'donations'
-                ? 'bg-zinc-200 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <CreditCard size={16} /> All Donations & Bank Transfer Logs ({donations.length})
-          </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="hidden sm:flex flex-col items-end">
+                    <span className="text-xs font-bold text-[#f5a287] group-hover:text-white transition-colors">
+                      {isNavDropdownOpen ? 'Close Menu' : 'Click to Change Section'}
+                    </span>
+                    <span className="text-[10px] text-zinc-400">
+                      7 sections available
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800/90 border border-zinc-700 flex items-center justify-center text-white group-hover:bg-[#e08a6e] group-hover:text-zinc-950 transition-colors shadow">
+                    {isNavDropdownOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </div>
+                </div>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('inquiries')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'inquiries'
-                ? 'bg-zinc-200 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <MessageSquare size={16} /> Ask Imam Inquiries ({inquiries.length})
-          </button>
+              {/* Smooth Animated Dropdown Menu */}
+              <AnimatePresence>
+                {isNavDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.99 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.99 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 right-0 mt-2 bg-[#14161c] border-2 border-[#e08a6e]/40 rounded-2xl shadow-2xl p-2.5 space-y-2 z-40 max-h-[75vh] overflow-y-auto"
+                  >
+                    <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 flex justify-between items-center">
+                      <span>Select an Admin Section (Tap any to open)</span>
+                      <span className="text-[#f5a287] font-semibold">Easy Dropdown View</span>
+                    </div>
 
-          <button
-            onClick={() => setActiveTab('feedback')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'feedback'
-                ? 'bg-zinc-200 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-            }`}
-          >
-            <MessageSquarePlus size={16} /> Community Feedback & Suggestions ({feedbacks.length})
-            {feedbacks.filter(f => !f.status || f.status === 'pending').length > 0 && (
-              <span className="px-1.5 py-0.2 bg-zinc-200 text-zinc-950 text-[10px] font-black rounded-full">
-                {feedbacks.filter(f => !f.status || f.status === 'pending').length}
-              </span>
-            )}
-          </button>
-        </div>
+                    {tabOptions.map((tab) => {
+                      const ItemIcon = tab.icon;
+                      const isSelected = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(tab.id);
+                            setIsNavDropdownOpen(false);
+                          }}
+                          className={`w-full p-4 rounded-xl flex items-center justify-between gap-3 text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#251814] border-2 border-[#e08a6e] text-white shadow-md'
+                              : 'bg-[#181b22] hover:bg-[#202530] border border-zinc-800/90 text-zinc-300 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                              isSelected ? 'bg-[#e08a6e] text-zinc-950 font-bold shadow' : 'bg-zinc-800 text-zinc-300'
+                            }`}>
+                              <ItemIcon size={22} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className={`text-sm sm:text-base font-bold ${isSelected ? 'text-[#fbdcd3]' : 'text-white'}`}>
+                                  {tab.label}
+                                </span>
+                                {tab.badge && (
+                                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${tab.badgeColor}`}>
+                                    {tab.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-zinc-400 mt-0.5">
+                                {tab.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0 flex items-center pl-2">
+                            {isSelected ? (
+                              <div className="flex items-center gap-1.5 text-[#e08a6e] text-xs font-bold bg-[#e08a6e]/15 px-3 py-1.5 rounded-lg border border-[#e08a6e]/40">
+                                <Check size={14} /> Currently Open
+                              </div>
+                            ) : (
+                              <span className="text-xs font-semibold text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-800/60 border border-zinc-700/60">
+                                Open Section &rarr;
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })()}
 
         {/* TAB 0A: PRAYER TIMES SCHEDULE */}
         {activeTab === 'prayer-times' && (
