@@ -791,9 +791,6 @@ const Admin: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal line-clamp-1 sm:line-clamp-none">
-                      {currentTabObj.description}
-                    </p>
                   </div>
                 </div>
 
@@ -861,20 +858,17 @@ const Admin: React.FC = () => {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-zinc-400 mt-0.5">
-                                {tab.description}
-                              </p>
                             </div>
                           </div>
 
                           <div className="shrink-0 flex items-center pl-2">
                             {isSelected ? (
-                              <div className="flex items-center gap-1.5 text-[#e08a6e] text-xs font-bold bg-[#e08a6e]/15 px-3 py-1.5 rounded-lg border border-[#e08a6e]/40">
-                                <Check size={14} /> Currently Open
+                              <div className="flex items-center gap-1 text-[#e08a6e] text-xs font-bold bg-[#e08a6e]/15 px-2.5 py-1.5 rounded-lg border border-[#e08a6e]/40 whitespace-nowrap">
+                                <Check size={14} /> <span className="hidden sm:inline">Currently </span>Open
                               </div>
                             ) : (
-                              <span className="text-xs font-semibold text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-800/60 border border-zinc-700/60">
-                                Open Section &rarr;
+                              <span className="text-xs font-semibold text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-800/60 border border-zinc-700/60 whitespace-nowrap">
+                                Open &rarr;
                               </span>
                             )}
                           </div>
