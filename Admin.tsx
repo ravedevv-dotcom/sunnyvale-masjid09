@@ -621,13 +621,13 @@ const Admin: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Admin Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#181b22] p-6 rounded-3xl border border-zinc-800 shadow-xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#181b22] p-4 sm:p-6 rounded-3xl border border-zinc-800 shadow-xl">
           <div>
-            <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase tracking-widest mb-1">
+            <div className="hidden sm:flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase tracking-widest mb-1">
               <ShieldCheck size={16} /> Mosque EXCO Administration Panel
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Sunnyvale Masjid Control Center</h1>
-            <p className="text-xs text-zinc-400 mt-1">
+            <h1 className="text-xl sm:text-3xl font-bold text-white">Sunnyvale Masjid Control Center</h1>
+            <p className="hidden sm:block text-xs text-zinc-400 mt-1">
               Logged in as Administrator ({user.email})
             </p>
           </div>
@@ -640,7 +640,7 @@ const Admin: React.FC = () => {
               }}
               className="flex items-center gap-1.5 px-3 py-2 bg-[#121419] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
             >
-              <RefreshCw size={13} /> Refresh Data
+              <RefreshCw size={13} /> Refresh
             </button>
             <Link
               to="/dashboard"
@@ -764,7 +764,7 @@ const Admin: React.FC = () => {
                   <Layers size={14} className="text-[#e08a6e]" />
                   Active Admin Section:
                 </label>
-                <span className="text-xs text-zinc-400 font-medium">
+                <span className="hidden sm:inline text-xs text-zinc-400 font-medium">
                   Click the box below to switch section (e.g. Events, Members, Donations)
                 </span>
               </div>
@@ -819,7 +819,7 @@ const Admin: React.FC = () => {
                     transition={{ duration: 0.15 }}
                     className="absolute left-0 right-0 mt-2 bg-[#14161c] border-2 border-[#e08a6e]/40 rounded-2xl shadow-2xl p-2.5 space-y-2 z-40 max-h-[75vh] overflow-y-auto"
                   >
-                    <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 flex justify-between items-center">
+                    <div className="hidden sm:flex px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 justify-between items-center">
                       <span>Select an Admin Section (Tap any to open)</span>
                       <span className="text-[#f5a287] font-semibold">Easy Dropdown View</span>
                     </div>

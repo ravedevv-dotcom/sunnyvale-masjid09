@@ -21,7 +21,8 @@ import {
   XCircle,
   UserCheck,
   ExternalLink,
-  Copy
+  Copy,
+  Phone
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { auth, db } from './firebase';
@@ -40,10 +41,16 @@ const Auth: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Mandatory Phone Number Modal for Login (Required for 26th of every month donation reminder)
+  const [showPhonePrompt, setShowPhonePrompt] = useState(false);
+  const [mandatoryPhone, setMandatoryPhone] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
@@ -70,6 +77,11 @@ const Auth: React.FC = () => {
   useEffect(() => {
     // If logged in and NOT waiting on verification screen
     if (user && !verificationPending) {
+      // Compulsory Phone Check: Member must have phone for monthly 26th donation reminders
+      if (!user.phone || !user.phone.trim()) {
+        setShowPhonePrompt(true);
+        return;
+      }
       if (redirectPath) {
         navigate(`/${redirectPath}`);
       } else {
@@ -77,6 +89,44 @@ const Auth: React.FC = () => {
       }
     }
   }, [user, navigate, redirectPath, verificationPending]);
+
+  // Save mandatory phone number for member login
+  const handleSaveMandatoryPhone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanPhone = mandatoryPhone.trim();
+    if (!cleanPhone || cleanPhone.length < 10) {
+      toast.error('Please enter a valid active phone number (at least 10 digits).');
+      return;
+    }
+
+    if (!auth.currentUser) {
+      toast.error('User session expired. Please sign in again.');
+      return;
+    }
+
+    setIsSavingPhone(true);
+    try {
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      await setDoc(userRef, {
+        phone: cleanPhone,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      await reloadUserStatus();
+      setShowPhonePrompt(false);
+      toast.success('Phone number registered! Monthly reminder will be sent on the 26th of every month.');
+      if (redirectPath) {
+        navigate(`/${redirectPath}`);
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Error saving mandatory phone:', err);
+      toast.error('Could not save phone number. Please try again.');
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
 
   // Resend countdown timer
   useEffect(() => {
@@ -326,6 +376,14 @@ const Auth: React.FC = () => {
         });
         return;
       }
+      if (!phone.trim() || phone.trim().length < 10) {
+        setAuthErrorDetails({
+          title: 'Phone Number Compulsory',
+          message: 'Phone number is compulsory. A monthly reminder on the 26th of every month will be sent to your phone for monthly donations.',
+          type: 'general'
+        });
+        return;
+      }
       if (password.length < 6) {
         setAuthErrorDetails({
           title: 'Weak Password',
@@ -349,6 +407,18 @@ const Auth: React.FC = () => {
       if (mode === 'login') {
         const result = await signInWithEmailAndPassword(auth, cleanEmail, password);
         toast.success('Logged in successfully!');
+        
+        // Verify phone requirement on login
+        try {
+          const uDoc = await getDoc(doc(db, 'users', result.user.uid));
+          const uData = uDoc.data();
+          if (!uData?.phone || !uData.phone.trim()) {
+            setShowPhonePrompt(true);
+          }
+        } catch (e) {
+          console.warn('Phone check error:', e);
+        }
+
         if (!result.user.emailVerified) {
           toast.info('Please verify your email address to unlock full member features.');
         }
@@ -366,13 +436,14 @@ const Auth: React.FC = () => {
           console.warn('Initial verification email trigger note:', verErr);
         }
 
-        // 3. Save user record with pending approval and emailVerified = false
+        // 3. Save user record with compulsory phone, pending approval and emailVerified = false
         try {
           const userRef = doc(db, 'users', firebaseUser.uid);
           await setDoc(userRef, {
             uid: firebaseUser.uid,
             name: name.trim(),
             email: cleanEmail,
+            phone: phone.trim(),
             emailVerified: false,
             approvalStatus: 'pending', // Requires admin review
             role: 'member',
@@ -804,19 +875,48 @@ const Auth: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-3.5"
                   >
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">Full Name</label>
-                    <div className="relative">
-                      <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#f5a287]" size={16} />
-                      <input
-                        type="text"
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        autoComplete="name"
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#121419] border border-zinc-700 rounded-xl outline-none focus:ring-2 focus:ring-[#e08a6e]/40 focus:border-[#e08a6e] transition-all text-white text-sm"
-                        placeholder="e.g. Ibrahim Abubakar"
-                      />
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-300 mb-1">Full Name *</label>
+                      <div className="relative">
+                        <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#f5a287]" size={16} />
+                        <input
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          autoComplete="name"
+                          className="w-full pl-10 pr-4 py-2.5 bg-[#121419] border border-zinc-700 rounded-xl outline-none focus:ring-2 focus:ring-[#e08a6e]/40 focus:border-[#e08a6e] transition-all text-white text-sm"
+                          placeholder="e.g. Ibrahim Abubakar"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-medium text-zinc-300">
+                          Phone Number (Compulsory) *
+                        </label>
+                        <span className="text-[10px] text-[#f5a287] font-semibold">
+                          Monthly 26th Reminder
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#f5a287]" size={16} />
+                        <input
+                          type="tel"
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          autoComplete="tel"
+                          className="w-full pl-10 pr-4 py-2.5 bg-[#121419] border border-zinc-700 rounded-xl outline-none focus:ring-2 focus:ring-[#e08a6e]/40 focus:border-[#e08a6e] transition-all text-white text-sm"
+                          placeholder="0803 123 4567"
+                        />
+                      </div>
+                      <p className="text-[10px] text-zinc-400 mt-1">
+                        Compulsory: A monthly reminder on the 26th of every month will be sent to this number for monthly donations.
+                      </p>
                     </div>
                   </motion.div>
                 )}
@@ -962,6 +1062,67 @@ const Auth: React.FC = () => {
           </>
         )}
       </motion.div>
+
+      {/* COMPULSORY PHONE NUMBER MODAL (Required for Monthly 26th Donation Reminders) */}
+      <AnimatePresence>
+        {showPhonePrompt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-[#181b22] border-2 border-[#e08a6e] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-zinc-100 relative"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-[#251814] text-[#f5a287] border border-[#e08a6e]/40 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Phone size={26} />
+              </div>
+
+              <div className="text-center mb-6">
+                <span className="text-[10px] text-[#f5a287] font-bold uppercase tracking-widest bg-[#251814] px-3 py-1 rounded-full border border-[#e08a6e]/30">
+                  Compulsory Login Requirement
+                </span>
+                <h3 className="text-xl font-bold text-white mt-2">
+                  Active Phone Number Required
+                </h3>
+                <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
+                  To continue accessing your member account, your phone number is compulsory. A monthly reminder on the <strong>26th of every month</strong> will be sent to your phone for monthly donations.
+                </p>
+              </div>
+
+              <form onSubmit={handleSaveMandatoryPhone} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                    Your Active Phone Number (Compulsory) *
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#f5a287]" size={16} />
+                    <input
+                      type="tel"
+                      required
+                      value={mandatoryPhone}
+                      onChange={(e) => setMandatoryPhone(e.target.value)}
+                      placeholder="e.g. 0803 123 4567 or +234..."
+                      className="w-full pl-10 pr-4 py-3 bg-[#121419] border border-zinc-700 rounded-xl outline-none focus:ring-2 focus:ring-[#e08a6e]/40 focus:border-[#e08a6e] text-white text-sm"
+                    />
+                  </div>
+                  <p className="text-[10px] text-[#f5a287] mt-1.5 font-medium">
+                    Reminder: Sent on the 26th of every month for mosque donations.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSavingPhone || !mandatoryPhone.trim()}
+                  className="w-full py-3.5 bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 font-bold rounded-xl text-sm shadow-xl shadow-[#e08a6e]/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>{isSavingPhone ? 'Saving Phone Number...' : 'Save Phone & Proceed to Dashboard'}</span>
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

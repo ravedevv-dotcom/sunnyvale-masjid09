@@ -14,6 +14,7 @@ import Profile from './Profile';
 import School from './School';
 import Events from './Events';
 import Admin from './Admin';
+import AdhkarHadith from './AdhkarHadith';
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/school" element={<School />} />
                 <Route path="/events" element={<Events />} />
+                <Route path="/adhkar" element={<AdhkarHadith />} />
+                <Route path="/adhkar-hadith" element={<AdhkarHadith />} />
                 <Route path="/admin" element={<Admin />} />
               </Routes>
             </main>

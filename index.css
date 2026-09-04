@@ -21,8 +21,11 @@
 }
 
 @layer base {
-  body {
+  html, body {
     @apply bg-[#0d0f12] text-zinc-100 transition-colors duration-300 antialiased selection:bg-[#e08a6e]/30 selection:text-[#fbdcd3];
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 }
 
@@ -66,5 +69,13 @@
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
