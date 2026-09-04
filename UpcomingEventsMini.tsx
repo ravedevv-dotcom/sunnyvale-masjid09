@@ -15,9 +15,20 @@ const UpcomingEventsMini: React.FC = () => {
         if (!snapshot.empty) {
           const list: EventItem[] = [];
           snapshot.forEach(d => {
-            list.push({ id: d.id, ...d.data() } as EventItem);
+            const data = d.data();
+            const titleLower = (data.title || '').toLowerCase();
+            if (
+              d.id === 'weekend-quran' || 
+              d.id === 'friday-halaqa' ||
+              titleLower.includes('community halaqa') ||
+              titleLower.includes('tajweed school') ||
+              titleLower.includes('weekend qur')
+            ) {
+              return;
+            }
+            list.push({ id: d.id, ...data } as EventItem);
           });
-          setEvents(list.slice(0, 3));
+          setEvents(list.length > 0 ? list.slice(0, 3) : BASELINE_EVENTS.slice(0, 3));
         } else {
           setEvents(BASELINE_EVENTS.slice(0, 3));
         }

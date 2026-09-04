@@ -55,26 +55,6 @@ export const BASELINE_EVENTS: EventItem[] = [
     location: 'Community Hall / Main Musalla',
     description: 'An open, interactive Question & Answer session held every Sunday morning where community members can ask questions on Fiqh, personal ethics, and daily life.',
     featured: true,
-  },
-  {
-    id: 'weekend-quran',
-    title: 'Weekend Qur\'an & Tajweed School',
-    category: 'Class',
-    time: '10:00 AM – 1:00 PM',
-    frequency: 'Saturdays & Sundays',
-    speaker: 'Certified Qur\'an Teachers',
-    location: 'Education Wing',
-    description: 'Comprehensive Qur\'an recitation, memorization, and Tajweed classes structured for children and adults of all proficiency levels.',
-  },
-  {
-    id: 'friday-halaqa',
-    title: 'Weekly Community Halaqa',
-    category: 'Weekly Program',
-    time: '8:00 PM (After Isha Prayer)',
-    frequency: 'Every Friday Night',
-    speaker: 'Imam & Youth Leaders',
-    location: 'Main Prayer Hall',
-    description: 'Weekly evening gathering focusing on Islamic history, Seerah of the Prophet (ﷺ), and strengthening bonds within the community.',
   }
 ];
 
@@ -93,7 +73,19 @@ const Events: React.FC = () => {
         if (!snapshot.empty) {
           const list: EventItem[] = [];
           snapshot.forEach((docSnap) => {
-            list.push({ id: docSnap.id, ...docSnap.data() } as EventItem);
+            const data = docSnap.data();
+            const titleLower = (data.title || '').toLowerCase();
+            // Exclude removed events
+            if (
+              docSnap.id === 'weekend-quran' || 
+              docSnap.id === 'friday-halaqa' ||
+              titleLower.includes('community halaqa') ||
+              titleLower.includes('tajweed school') ||
+              titleLower.includes('weekend qur')
+            ) {
+              return;
+            }
+            list.push({ id: docSnap.id, ...data } as EventItem);
           });
           // Sort featured first, then newest
           list.sort((a, b) => {
@@ -101,7 +93,7 @@ const Events: React.FC = () => {
             if (!a.featured && b.featured) return 1;
             return 0;
           });
-          setEventsList(list);
+          setEventsList(list.length > 0 ? list : BASELINE_EVENTS);
         } else {
           // If no custom events yet in Firestore, use baseline
           setEventsList(BASELINE_EVENTS);

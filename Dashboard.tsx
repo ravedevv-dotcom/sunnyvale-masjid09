@@ -85,11 +85,11 @@ const DEFAULT_ANNOUNCEMENTS: MosqueAnnouncement[] = [
   },
   {
     id: 'event-2',
-    title: 'Sunnyvale Youth Academy & Weekend Halaqa',
-    content: 'Registration is ongoing for children ages 6-16 for Tajweed, Arabic literacy, and Islamic manners fundamentals.',
+    title: 'Sunday Islamic Q&A & Fiqh Session',
+    content: 'Interactive question and answer session on Fiqh, daily worship, and Islamic ethics with our resident scholars.',
     category: 'event',
-    time: 'Saturdays & Sundays 10:00 AM - 1:00 PM',
-    speaker: 'Youth & Education Directorate'
+    time: 'Sundays 10:30 AM – 11:45 AM',
+    speaker: 'Resident Imam & Guest Scholars'
   },
   {
     id: 'urgent-1',
