@@ -20,7 +20,8 @@ import {
   Calendar,
   Layers,
   Baby,
-  Library
+  Library,
+  AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { db } from './firebase';
@@ -51,12 +52,13 @@ const School: React.FC = () => {
     try {
       await addDoc(collection(db, 'inquiries'), {
         ...inquiryData,
-        type: 'school_admission',
+        type: 'school_admission_waitlist',
         school: 'ALHAMEDEEN ACADEMY',
-        status: 'pending',
+        status: 'waitlist_pending',
+        sessionNotes: 'Submitted after current session admission deadline',
         createdAt: serverTimestamp()
       });
-      toast.success('Admission inquiry submitted successfully! The school administration will contact you shortly.');
+      toast.success('Inquiry received! Admissions for the current session are closed. Your details have been placed on the waitlist for the upcoming session.');
       setShowInquiryModal(false);
       setInquiryData({
         parentName: '',
@@ -69,7 +71,7 @@ const School: React.FC = () => {
       });
     } catch (err) {
       console.warn('Inquiry submit note:', err);
-      toast.success('Inquiry received! We will reach out via WhatsApp/Phone.');
+      toast.success('Inquiry received! We will reach out via WhatsApp/Phone for the next intake.');
       setShowInquiryModal(false);
     } finally {
       setIsSubmitting(false);
@@ -104,13 +106,28 @@ const School: React.FC = () => {
             A Center of Excellence in Tahfeez al-Qur'an, Islamic Sciences, Character Formation & Conventional Academic Distinction.
           </p>
 
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 mt-8">
+          {/* Admissions Ended Status Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 max-w-xl mx-auto bg-amber-950/30 border border-amber-500/30 rounded-2xl p-3 sm:p-3.5 flex items-center justify-center gap-2.5 text-amber-200 text-xs sm:text-sm text-center shadow-lg"
+          >
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></div>
+            <span>
+              <strong className="text-amber-300">Admissions Closed:</strong> Enrollment for the current session has ended. Parents may register below for the waitlist or upcoming session inquiry.
+            </span>
+          </motion.div>
+
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 mt-6">
             <button
               onClick={() => setShowInquiryModal(true)}
-              className="bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl shadow-[#e08a6e]/25 transition-all flex items-center gap-2 cursor-pointer"
+              className="bg-[#251814] hover:bg-[#32201a] text-white border border-[#e08a6e]/60 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl transition-all flex items-center gap-2.5 cursor-pointer active:scale-95"
             >
-              <span>Enroll Student / Admission Inquiry</span>
-              <ArrowRight size={16} />
+              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-amber-500/30">
+                Closed
+              </span>
+              <span>Join Next Session Waitlist</span>
+              <ArrowRight size={16} className="text-[#f5a287]" />
             </button>
 
             <Link
@@ -343,15 +360,20 @@ const School: React.FC = () => {
           {/* Contact Administration */}
           <div className="bg-[#14171d] p-6 rounded-3xl border border-zinc-800 text-center flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-left">
-              <h4 className="text-base font-bold text-white">Have questions about admissions or enrollment?</h4>
-              <p className="text-xs text-zinc-400 mt-0.5">Visit the administration office at Sunnyvale Masjid or call our school desk.</p>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wide border border-amber-500/30">
+                  Admissions Closed
+                </span>
+                <h4 className="text-base font-bold text-white">Have questions about waitlisting or future intakes?</h4>
+              </div>
+              <p className="text-xs text-zinc-400 mt-0.5">Admissions for the current session have concluded. Visit the administration office at Sunnyvale Masjid or register on the waitlist below.</p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowInquiryModal(true)}
-                className="bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 px-5 py-2.5 rounded-xl font-bold text-xs cursor-pointer shadow-md"
+                className="bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 px-5 py-2.5 rounded-xl font-bold text-xs cursor-pointer shadow-md active:scale-95 transition-transform"
               >
-                Inquire Online
+                Join Waitlist Online
               </button>
               <a
                 href={`tel:${CONTACT_PHONES[0]}`}
@@ -375,13 +397,18 @@ const School: React.FC = () => {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-[#181b22] border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-zinc-100 shadow-2xl relative"
             >
-              <div className="flex justify-between items-start mb-5 pb-3 border-b border-zinc-800">
+              <div className="flex justify-between items-start mb-4 pb-3 border-b border-zinc-800">
                 <div>
-                  <span className="text-[10px] text-[#f5a287] uppercase font-bold tracking-widest">
-                    ALHAMEDEEN ACADEMY
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-[#f5a287] uppercase font-bold tracking-widest">
+                      ALHAMEDEEN ACADEMY
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[9px] font-bold uppercase tracking-wider border border-amber-500/30">
+                      Admissions Closed
+                    </span>
+                  </div>
                   <h3 className="text-xl font-bold text-white mt-1">
-                    Student Admission & Inquiry
+                    Student Waitlist & Future Inquiry
                   </h3>
                 </div>
                 <button
@@ -390,6 +417,14 @@ const School: React.FC = () => {
                 >
                   ✕
                 </button>
+              </div>
+
+              {/* Status Notice inside Modal */}
+              <div className="p-3 bg-amber-950/40 border border-amber-500/30 rounded-xl text-amber-200 text-xs flex items-start gap-2.5 mb-4">
+                <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                <div className="leading-relaxed">
+                  <strong className="text-amber-300">Admissions Closed:</strong> Enrollment for the current session is full and closed. Submit your child's information below to be placed on our prioritized waitlist for future vacancies and upcoming session intakes.
+                </div>
               </div>
 
               <form onSubmit={handleInquirySubmit} className="space-y-3.5 text-xs">
@@ -462,7 +497,7 @@ const School: React.FC = () => {
                     value={inquiryData.message}
                     onChange={(e) => setInquiryData({ ...inquiryData, message: e.target.value })}
                     className="w-full bg-[#121419] border border-zinc-700 rounded-xl px-3.5 py-2 text-white outline-none focus:border-[#e08a6e]"
-                    placeholder="Specific questions regarding fees, bus transport, or tahfeez level..."
+                    placeholder="Specific questions regarding upcoming terms, waitlist priority, or tahfeez level..."
                   />
                 </div>
 
@@ -477,10 +512,10 @@ const School: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-2.5 rounded-xl font-bold bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 flex items-center gap-1.5 shadow-md"
+                    className="px-6 py-2.5 rounded-xl font-bold bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 flex items-center gap-1.5 shadow-md cursor-pointer"
                   >
                     <Send size={13} />
-                    <span>{isSubmitting ? 'Submitting...' : 'Submit Inquiry'}</span>
+                    <span>{isSubmitting ? 'Registering...' : 'Join Waitlist / Submit'}</span>
                   </button>
                 </div>
               </form>

@@ -134,17 +134,21 @@ const Home: React.FC = () => {
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link 
                   to="/school" 
                   className="bg-[#e08a6e] hover:bg-[#eb977c] text-zinc-950 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
                 >
-                  <span>Explore Academy Brief & Enrollment</span>
+                  <span>Explore Academy & Waitlist</span>
                   <ArrowRight size={14} />
                 </Link>
+                <span className="px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                  Admissions Ended for Current Session
+                </span>
                 <Link 
                   to="/donate" 
-                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white px-5 py-3 rounded-xl font-semibold text-xs sm:text-sm border border-zinc-700 transition-all"
+                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white px-5 py-3 rounded-xl font-semibold text-xs sm:text-sm border border-zinc-700 transition-all ml-auto sm:ml-0"
                 >
                   Donate to Construction
                 </Link>
