@@ -176,14 +176,14 @@ const PrayerTimes: React.FC = () => {
               <motion.div
                 key={prayer.name}
                 whileHover={{ y: -2 }}
-                className={`min-w-[130px] sm:min-w-[145px] md:min-w-0 snap-start shrink-0 p-4 rounded-2xl flex flex-col items-center justify-center text-center transition-all ${
+                className={`w-[calc(50%-6px)] min-w-[calc(50%-6px)] max-w-[calc(50%-6px)] sm:w-[calc(33.333%-8px)] sm:min-w-[calc(33.333%-8px)] sm:max-w-none md:w-auto md:min-w-0 md:max-w-none snap-start shrink-0 p-4 sm:p-3.5 rounded-2xl flex flex-col items-center justify-center text-center transition-all ${
                   isNext
-                    ? 'bg-gradient-to-b from-[#e08a6e] to-[#c86d51] text-zinc-950 shadow-xl ring-2 ring-[#f5a287] font-bold shadow-[#e08a6e]/40 scale-[1.02] z-10'
+                    ? 'bg-gradient-to-b from-[#e08a6e] to-[#c86d51] text-zinc-950 shadow-xl ring-2 ring-[#f5a287] font-bold shadow-[#e08a6e]/40 z-10'
                     : 'bg-[#16181f] hover:bg-[#1d2029] text-zinc-300 border border-zinc-800 hover:border-[#e08a6e]/30'
                 }`}
               >
                 <div
-                  className={`p-2.5 rounded-xl mb-2 ${
+                  className={`p-3 sm:p-2.5 rounded-xl mb-2 sm:mb-1.5 ${
                     isNext
                       ? 'bg-zinc-950 text-[#f5a287]'
                       : 'bg-[#251814] text-[#f5a287] border border-[#e08a6e]/30'
@@ -192,31 +192,42 @@ const PrayerTimes: React.FC = () => {
                   {prayer.icon}
                 </div>
                 <span
-                  className={`text-[11px] uppercase tracking-wider font-semibold ${
+                  className={`text-xs sm:text-[11px] uppercase tracking-wider font-bold ${
                     isNext ? 'text-zinc-950 font-black' : 'text-zinc-400'
                   }`}
                 >
                   {prayer.name}
                 </span>
                 <span
-                  className={`text-base font-bold mt-1 tracking-tight ${
+                  className={`text-lg sm:text-base md:text-base font-black mt-1 tracking-tight ${
                     isNext ? 'text-zinc-950 font-black' : 'text-white'
                   }`}
                 >
                   {prayer.time}
                 </span>
                 {isNext ? (
-                  <span className="mt-2 text-[9px] bg-zinc-950 text-[#f5a287] px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold shadow-sm">
+                  <span className="mt-2 text-[10px] sm:text-[9px] bg-zinc-950 text-[#f5a287] px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold shadow-sm">
                     Upcoming
                   </span>
                 ) : (
-                  <span className="mt-2 text-[9px] text-zinc-500 uppercase tracking-wider">
+                  <span className="mt-2 text-[10px] sm:text-[9px] text-zinc-500 uppercase tracking-wider font-medium">
                     Daily
                   </span>
                 )}
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Mobile Swipe Hint & Quick Jumu'ah Notice */}
+        <div className="md:hidden mt-2.5 flex items-center justify-between text-[11px] text-zinc-400 px-1">
+          <span className="text-zinc-500 font-medium flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e08a6e]/60"></span>
+            Swipe horizontally for all 6 prayers
+          </span>
+          <span className="text-[#f5a287] font-semibold">
+            Jumu'ah: {schedule.jumuaKhutbah || '12:50 PM'}
+          </span>
         </div>
       </div>
 
