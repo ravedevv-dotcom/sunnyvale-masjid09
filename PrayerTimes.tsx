@@ -176,41 +176,45 @@ const PrayerTimes: React.FC = () => {
               <motion.div
                 key={prayer.name}
                 whileHover={{ y: -2 }}
-                className={`w-[calc(50%-6px)] min-w-[calc(50%-6px)] max-w-[calc(50%-6px)] sm:w-[calc(33.333%-8px)] sm:min-w-[calc(33.333%-8px)] sm:max-w-none md:w-auto md:min-w-0 md:max-w-none snap-start shrink-0 p-4 sm:p-3.5 rounded-2xl flex flex-col items-center justify-center text-center transition-all ${
+                className={`w-[calc(50%-6px)] min-w-[calc(50%-6px)] max-w-[calc(50%-6px)] sm:w-[calc(33.333%-8px)] sm:min-w-[calc(33.333%-8px)] sm:max-w-none md:w-auto md:min-w-0 md:max-w-none min-h-[200px] sm:min-h-[190px] md:min-h-[195px] snap-start shrink-0 py-6 px-4 sm:py-5 sm:px-3 rounded-2xl flex flex-col items-center justify-between text-center transition-all ${
                   isNext
                     ? 'bg-gradient-to-b from-[#e08a6e] to-[#c86d51] text-zinc-950 shadow-xl ring-2 ring-[#f5a287] font-bold shadow-[#e08a6e]/40 z-10'
                     : 'bg-[#16181f] hover:bg-[#1d2029] text-zinc-300 border border-zinc-800 hover:border-[#e08a6e]/30'
                 }`}
               >
                 <div
-                  className={`p-3 sm:p-2.5 rounded-xl mb-2 sm:mb-1.5 ${
+                  className={`w-12 h-12 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-transform ${
                     isNext
-                      ? 'bg-zinc-950 text-[#f5a287]'
+                      ? 'bg-zinc-950 text-[#f5a287] shadow-inner'
                       : 'bg-[#251814] text-[#f5a287] border border-[#e08a6e]/30'
                   }`}
                 >
                   {prayer.icon}
                 </div>
-                <span
-                  className={`text-xs sm:text-[11px] uppercase tracking-wider font-bold ${
-                    isNext ? 'text-zinc-950 font-black' : 'text-zinc-400'
-                  }`}
-                >
-                  {prayer.name}
-                </span>
-                <span
-                  className={`text-lg sm:text-base md:text-base font-black mt-1 tracking-tight ${
-                    isNext ? 'text-zinc-950 font-black' : 'text-white'
-                  }`}
-                >
-                  {prayer.time}
-                </span>
+
+                <div className="my-2">
+                  <span
+                    className={`block text-xs sm:text-[11px] uppercase tracking-wider font-bold ${
+                      isNext ? 'text-zinc-950 font-black' : 'text-zinc-400'
+                    }`}
+                  >
+                    {prayer.name}
+                  </span>
+                  <span
+                    className={`block text-xl sm:text-lg md:text-lg font-black mt-1.5 tracking-tight ${
+                      isNext ? 'text-zinc-950 font-black' : 'text-white'
+                    }`}
+                  >
+                    {prayer.time}
+                  </span>
+                </div>
+
                 {isNext ? (
-                  <span className="mt-2 text-[10px] sm:text-[9px] bg-zinc-950 text-[#f5a287] px-2.5 py-0.5 rounded-full uppercase tracking-widest font-extrabold shadow-sm">
+                  <span className="text-[10px] sm:text-[9px] bg-zinc-950 text-[#f5a287] px-3 py-1 rounded-full uppercase tracking-widest font-extrabold shadow-sm">
                     Upcoming
                   </span>
                 ) : (
-                  <span className="mt-2 text-[10px] sm:text-[9px] text-zinc-500 uppercase tracking-wider font-medium">
+                  <span className="text-[10px] sm:text-[9px] text-zinc-400 bg-zinc-900/60 border border-zinc-800/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider font-medium">
                     Daily
                   </span>
                 )}

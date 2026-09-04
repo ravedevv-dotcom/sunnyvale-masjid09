@@ -43,8 +43,8 @@ const MINI_ADHKAR_LIST: Record<string, MiniDhikr[]> = {
       id: 'tahlil',
       title: '100th Completion',
       arabic: 'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
-      transliteration: 'La ilaha illallahu wahdahu la shareeka lah...',
-      translation: 'None has the right to be worshipped except Allah alone',
+      transliteration: 'La ilaha illallahu wahdahu la shareeka lah, lahul-mulku wa lahul-hamd, wa Huwa ala kulli shay-in qadeer.',
+      translation: 'None has the right to be worshipped except Allah alone, without partner. To Him belongs all sovereignty and praise, and He is over all things capable.',
       count: 1,
     }
   ],
@@ -52,17 +52,17 @@ const MINI_ADHKAR_LIST: Record<string, MiniDhikr[]> = {
     {
       id: 'm-sayyid',
       title: 'Sayyid al-Istighfar',
-      arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ...',
-      transliteration: 'Allahumma Anta Rabbi la ilaha illa Anta, khalaqtani...',
-      translation: 'O Allah, You are my Lord, there is none worthy of worship but You...',
+      arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+      transliteration: "Allahumma Anta Rabbi la ilaha illa Anta, khalaqtani wa ana 'abduka, wa ana 'ala 'ahdika wa wa'dika mastata'tu, a'udhu bika min sharri ma sana'tu, abu'u laka bini'matika 'alayya, wa abu'u laka bidhanbi faghfir li fa-innahu la yaghfirudh-dhunuba illa Anta.",
+      translation: 'O Allah, You are my Lord; there is no deity except You. You created me and I am Your servant, and I abide by Your covenant and Your promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge before You Your favor upon me, and I acknowledge my sin, so forgive me, for indeed none can forgive sins except You.',
       count: 1,
     },
     {
       id: 'm-bismillah',
       title: 'Protection Du\'a (3x)',
       arabic: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
-      transliteration: "Bismillahilladhi la yadurru ma'asmihi shay'un...",
-      translation: 'In the Name of Allah with Whose Name nothing can cause harm on earth or in the heavens...',
+      transliteration: "Bismillahilladhi la yadurru ma'asmihi shay'un fil-ardi wa la fis-sama'i wa Huwas-Sami'ul-'Alim.",
+      translation: 'In the Name of Allah with Whose Name nothing can cause harm on earth or in the heavens, and He is the All-Hearing, the All-Knowing.',
       count: 3,
     }
   ],
@@ -70,9 +70,9 @@ const MINI_ADHKAR_LIST: Record<string, MiniDhikr[]> = {
     {
       id: 'e-amsayna',
       title: 'Evening Remembrance',
-      arabic: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ',
-      transliteration: 'Amsayna wa amsal-mulku lillah, wal-hamdu lillah...',
-      translation: 'We have entered the evening, and dominion belongs to Allah...',
+      arabic: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+      transliteration: "Amsayna wa amsal-mulku lillah, wal-hamdu lillah, la ilaha illallahu wahdahu la shareeka lah, lahul-mulku wa lahul-hamd, wa Huwa 'ala kulli shay-in qadeer.",
+      translation: 'We have entered the evening, and with it all dominion belongs to Allah, and all praise is for Allah. None has the right to be worshipped except Allah alone, without partner. To Him belongs all sovereignty and praise, and He is over all things capable.',
       count: 1,
     },
     {
